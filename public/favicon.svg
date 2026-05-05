@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="100%" height="100%" viewBox="0 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fillRule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+<svg width="100%" height="100%" viewBox="0 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fillRule:evenodd;clipRule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
     <g transform="matrix(0.156928,0,0,0.156928,20.2337,20.2337)">
         <g transform="matrix(2.84444,0,0,2.84444,-26.5079,-128.936)">
             <path d="M0,77.294L29.035,77.294L-3.314,44.945C-12.321,35.938 -5.942,20.537 6.797,20.537L48.843,20.537L62.757,0L8.27,0C-23.306,0 -39.119,38.176 -16.792,60.503L0,77.294Z" style="fill:rgb(37,99,235);fillRule:nonzero;"/>
