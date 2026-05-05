@@ -1,0 +1,189 @@
+---
+// src/pages/apps/index.astro
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import BaseLayout from "@/layouts/BaseLayout.astro";
+
+// 1. Ambil semua data aplikasi dari Content Collections
+const allAppsEntries = await getCollection('apps');
+
+// 2. Logika warna berdasarkan kategori
+const colorMap: Record<string, { color: string; border: string; accent: string }> = {
+  "Seni & Budaya": {
+    color: "from-violet-500/20 to-purple-600/10",
+    border: "border-violet-400/20",
+    accent: "text-violet-600 dark:text-violet-400",
+  },
+  "Produktivitas": {
+    color: "from-amber-500/20 to-orange-600/10",
+    border: "border-amber-400/20",
+    accent: "text-amber-600 dark:text-amber-400",
+  },
+  "Bisnis": {
+    color: "from-emerald-500/20 to-green-600/10",
+    border: "border-emerald-400/20",
+    accent: "text-emerald-600 dark:text-emerald-400",
+  },
+  "Keuangan": {
+    color: "from-blue-500/20 to-cyan-600/10",
+    border: "border-blue-400/20",
+    accent: "text-blue-600 dark:text-blue-400",
+  },
+};
+
+// 3. Gabungkan data entry dengan tema warna
+const apps = allAppsEntries.map((entry: CollectionEntry<'apps'>) => {
+  const theme = colorMap[entry.data.category] ?? colorMap["Bisnis"];
+  return {
+    ...entry.data,   // name, tagline, icon (ImageMetadata), status, category, techStack, dll
+    slug: entry.id,
+    ...theme,
+  };
+});
+
+const categories = ["Semua", ...new Set(apps.map((app) => app.category))];
+
+const statusStyle = (s: string) => {
+  if (s === "Tersedia") return "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20";
+  if (s === "Beta" || s === "Close Testing") return "bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20";
+  return "bg-slate-500/10 text-slate-500 border border-slate-500/20";
+};
+---
+
+<BaseLayout
+  title="Aplikasi"
+  description="Kumpulan aplikasi Android yang dibangun oleh SariLab Studio — dari kalender budaya Bali hingga tools produktivitas UMKM."
+>
+  <!-- Hero Section -->
+  <section class="pt-32 pb-12 max-w-6xl mx-auto px-6">
+    <div class="mb-16 animate-on-scroll">
+      <p class="section-label">Aplikasi Kami</p>
+      <h1 class="font-heading text-5xl md:text-6xl font-extrabold text-slate-900 dark:text-white leading-tight mb-5">
+        Solusi Digital <span class="text-gradient-blue italic">di Genggaman.</span>
+      </h1>
+      <p class="text-slate-500 dark:text-slate-400 text-lg max-w-xl leading-relaxed font-body">
+        Aplikasi Android buatan SariLab Studio — dirancang untuk kebutuhan nyata, dari pelestarian budaya Bali hingga pengelolaan bisnis lokal.
+      </p>
+    </div>
+
+    <!-- Stats Strip -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16 animate-on-scroll">
+      {[
+        { value: apps.length.toString(), label: "Aplikasi Rilis" },
+        { value: "4K+", label: "Total Unduhan" },
+        { value: "4.8★", label: "Rating Rata-rata" },
+        { value: "2025", label: "Mulai Berkarya" },
+      ].map((stat) => (
+        <div class="rounded-2xl border border-slate-200 dark:border-white/8 bg-white/60 dark:bg-navy-800/40 p-5 text-center backdrop-blur-sm">
+          <p class="font-heading font-extrabold text-2xl text-slate-900 dark:text-white mb-1">{stat.value}</p>
+          <p class="font-mono text-xs text-slate-500 dark:text-slate-500 uppercase tracking-wider">{stat.label}</p>
+        </div>
+      ))}
+    </div>
+
+    <!-- Category Filter -->
+    <div class="flex flex-wrap gap-2 mb-10 animate-on-scroll">
+      {categories.map((cat, i) => (
+        <button
+          class={`px-4 py-1.5 text-sm rounded-full font-medium font-body transition-all duration-200 ${
+            i === 0
+              ? "bg-blue-600 text-white shadow-lg"
+              : "border border-slate-200 dark:border-white/8 text-slate-500 dark:bg-navy-800/40"
+          }`}
+        >
+          {cat}
+        </button>
+      ))}
+    </div>
+  </section>
+
+  <!-- Apps Grid -->
+  <section class="max-w-6xl mx-auto px-6 pb-24">
+    <div class="grid md:grid-cols-2 gap-6">
+      {apps.map((app, i) => (
+        <article
+          class="group relative rounded-3xl border border-slate-200 dark:border-white/8 bg-white/80 dark:bg-navy-800/60 backdrop-blur-sm hover:border-blue-300 dark:hover:border-blue-500/25 hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col"
+          style={`transition-delay:${i * 80}ms`}
+        >
+          <div class={`h-1 w-full bg-linear-to-r ${app.color}`} />
+
+          <div class="p-7 flex flex-col gap-5 flex-1">
+            <div class="flex items-start gap-4">
+              <!-- Icon dari image() collection — pakai <Image> untuk optimasi -->
+              <div class={`w-16 h-16 shrink-0 rounded-2xl bg-linear-to-br ${app.color} border ${app.border} overflow-hidden shadow-sm flex items-center justify-center`}>
+                <Image
+                  src={app.icon}
+                  alt={`${app.name} icon`}
+                  width={64}
+                  height={64}
+                  class="w-full h-full object-cover"
+                />
+              </div>
+
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 flex-wrap mb-1">
+                  <h2 class={`font-heading font-bold text-slate-900 dark:text-slate-100 text-xl group-hover:${app.accent} transition-colors`}>
+                    {app.name}
+                  </h2>
+                  <span class={`text-[10px] font-mono px-2 py-0.5 rounded-full ${statusStyle(app.status)}`}>
+                    {app.status}
+                  </span>
+                </div>
+                <p class={`text-xs font-mono ${app.accent} mb-2`}>{app.category}</p>
+              </div>
+            </div>
+
+            <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed font-body">
+              {app.tagline}
+            </p>
+
+            <div class="flex flex-wrap gap-1.5">
+              {app.techStack.slice(0, 3).map((tag) => (
+                <span class="px-2 py-0.5 text-[10px] rounded-lg font-mono bg-slate-100 dark:bg-white/5 text-slate-500 border border-slate-200 dark:border-white/8">
+                  {tag}
+                </span>
+              ))}
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="mt-auto pt-4 border-t border-slate-100 dark:border-white/5 flex items-center gap-3">
+              <a
+                href={`/apps/${app.slug}`}
+                class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium font-body text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-white/8 hover:text-blue-600 transition-all duration-200 flex-1 justify-center"
+              >
+                Detail
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+
+              <!-- Tombol store langsung jika tersedia -->
+              {app.links && app.links.length > 0 && (
+                <a
+                  href={app.links[0].href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium font-body text-white bg-blue-600 hover:bg-blue-500 transition-all duration-200"
+                >
+                  {app.links[0].store}
+                </a>
+              )}
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <!-- CTA Bottom -->
+    <div class="mt-16 rounded-3xl border border-blue-200/50 dark:border-blue-500/20 bg-linear-to-br from-blue-50 to-blue-100/50 dark:from-blue-500/10 dark:to-blue-600/5 p-10 text-center">
+      <p class="section-label">Kolaborasi</p>
+      <h3 class="font-heading text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-3">
+        Punya ide aplikasi?
+      </h3>
+      <a href="mailto:hello@sarilabstudio.com" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold font-heading text-white bg-blue-600 hover:bg-blue-500 transition-all">
+        Hubungi Kami
+      </a>
+    </div>
+  </section>
+</BaseLayout>

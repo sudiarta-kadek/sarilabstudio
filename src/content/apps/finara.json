@@ -1,0 +1,40 @@
+{
+  "name": "Finara",
+  "tagline": "Pengelola keuangan pribadi yang cerdas",
+  "description": "Finara membantu Anda memahami, melacak, dan mengelola keuangan pribadi dengan insight otomatis, kategori pengeluaran, dan visualisasi yang indah — semua dalam satu aplikasi Android.",
+  "icon": "../../assets/images/finara-icon.png",
+  "status": "Close Testing",
+  "category": "Keuangan",
+  "tags": ["Android", "Jetpack Compose", "Keuangan"],
+  "techStack": [
+    "Android",
+    "Jetpack Compose",
+    "Kotlin",
+    "Room",
+    "Hilt",
+    "Google Cloud",
+    "Material 3"
+  ],
+  "rating": "—",
+  "downloads": "Terbatas",
+  "year": "2025",
+  "features": [
+    {
+      "icon": "📊",
+      "title": "Dashboard Visual",
+      "desc": "Grafik interaktif untuk melihat arus kas, pengeluaran per kategori, dan tren bulanan."
+    },
+    {
+      "icon": "🏷️",
+      "title": "Kategorisasi Otomatis",
+      "desc": "Transaksi dikategorikan secara otomatis berdasarkan pola pengeluaran Anda."
+    }
+  ],
+  "links": [
+    {
+      "store": "Daftar Beta",
+      "href": "mailto:hello@sarilabstudio.com",
+      "icon": "mail"
+    }
+  ]
+}

@@ -1,0 +1,158 @@
+---
+// src/pages/projects/index.astro
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { Badge } from "@/components/ui/badge";
+import { getCollection } from "astro:content";
+
+// Ambil apps dari content collection
+const allApps = await getCollection("apps");
+
+// Urutkan berdasarkan status
+const statusOrder = ["Tersedia", "Beta", "Close Testing", "Segera Hadir"];
+const sortedApps = allApps.sort(
+  (a, b) =>
+    statusOrder.indexOf(a.data.status) - statusOrder.indexOf(b.data.status)
+);
+
+// Map apps collection → format project card
+const appProjects = sortedApps.map((app) => ({
+  title: app.data.name,
+  desc: app.data.description,
+  tags: app.data.tags ?? app.data.techStack.slice(0, 4),
+  status: app.data.status,
+  year: app.data.year ?? "2024",
+  href: `/apps/${app.id}`,
+  external: false,
+  icon: app.data.icon,   // objek image() dari collection
+  emoji: null,
+}));
+
+// Item eksternal tetap hardcode
+const externalProjects = [
+  {
+    title: "Portfolio Template",
+    desc: "Template portfolio open-source untuk developer, dibangun dengan Astro + React. Cepat, SEO-friendly, dan fully customizable.",
+    tags: ["Astro", "React", "Tailwind", "TypeScript"],
+    status: "Open Source",
+    year: "2024",
+    href: "https://github.com/sarilabstudio",
+    external: true,
+    icon: null,
+    emoji: "🚀",
+  },
+];
+
+const projects = [...appProjects, ...externalProjects];
+
+const statusVariant = (s: string) => {
+  if (s === "Tersedia") return "success";
+  if (s === "Beta" || s === "Close Testing") return "default";
+  if (s === "Open Source") return "info";
+  return "secondary";
+};
+
+const filters = ["Semua", "Android", "Jetpack Compose", "Open Source", "Tersedia"];
+---
+
+<BaseLayout
+  title="Proyek"
+  description="Proyek dan karya SarilabStudio."
+>
+  <section class="pt-32 pb-16 max-w-6xl mx-auto px-6">
+    <!-- Header -->
+    <div class="mb-16 animate-on-scroll">
+      <p class="section-label">Portfolio</p>
+      <h1 class="font-heading text-5xl md:text-6xl font-extrabold text-slate-900 dark:text-white leading-tight mb-5">
+        Yang Telah{" "}
+        <span class="text-gradient-blue italic">Kami Bangun.</span>
+      </h1>
+      <p class="text-slate-500 dark:text-slate-400 text-lg max-w-xl leading-relaxed font-body">
+        Kumpulan proyek — aplikasi mobile, tools, dan eksperimen — yang dibangun dengan penuh perhatian dan tujuan.
+      </p>
+    </div>
+
+    <!-- Filter tags -->
+    <div class="flex flex-wrap gap-2 mb-12 animate-on-scroll">
+      {filters.map((filter, i) => (
+        <button
+          class={`px-4 py-1.5 text-sm rounded-full font-medium font-body transition-all ${
+            i === 0
+              ? "bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/30"
+              : "border border-slate-200 dark:border-white/8 text-slate-500 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:border-slate-300 dark:hover:border-white/15"
+          }`}
+        >
+          {filter}
+        </button>
+      ))}
+    </div>
+
+    <!-- Projects grid -->
+    <div class="grid md:grid-cols-2 gap-5">
+      {projects.map((project, i) => (
+        <a
+          href={project.href}
+          target={project.external ? "_blank" : undefined}
+          rel={project.external ? "noopener noreferrer" : undefined}
+          class="group rounded-2xl border border-slate-200 dark:border-white/8 bg-white/80 dark:bg-navy-800/60 backdrop-blur-sm hover:border-blue-300 dark:hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/10 dark:hover:bg-navy-700/60 transition-all duration-300 p-7 flex flex-col gap-5 animate-on-scroll"
+          style={`transition-delay:${i * 60}ms`}
+        >
+          <div class="flex items-start justify-between">
+            <!-- Icon: gambar dari collection atau emoji fallback untuk item eksternal -->
+            <div class="w-12 h-12 rounded-2xl bg-linear-to-br from-blue-50 to-blue-100 dark:from-blue-500/15 dark:to-blue-600/5 border border-blue-200/50 dark:border-blue-500/20 flex items-center justify-center overflow-hidden">
+              {project.icon ? (
+                <img
+                  src={project.icon.src}
+                  alt={project.title}
+                  width={48}
+                  height={48}
+                  class="object-cover w-full h-full"
+                />
+              ) : (
+                <span class="text-2xl">{project.emoji}</span>
+              )}
+            </div>
+
+            <div class="flex items-center gap-2">
+              <span class="font-mono text-xs text-slate-400 dark:text-slate-600">{project.year}</span>
+              <Badge variant={statusVariant(project.status)}>
+                {project.status}
+              </Badge>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="font-heading font-bold text-slate-900 dark:text-slate-100 text-xl mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+              {project.title}
+              {project.external && (
+                <svg
+                  class="inline-block ml-2 opacity-30 group-hover:opacity-70 transition-opacity"
+                  width="12"
+                  height="12"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                >
+                  <path
+                    d="M6 3H3a1 1 0 00-1 1v9a1 1 0 001 1h9a1 1 0 001-1v-3M10 2h4v4M14 2L8 8"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              )}
+            </h3>
+            <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed font-body">
+              {project.desc}
+            </p>
+          </div>
+
+          <div class="flex flex-wrap gap-1.5 mt-auto pt-2">
+            {project.tags.map((tag) => (
+              <Badge variant="outline">{tag}</Badge>
+            ))}
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

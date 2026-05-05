@@ -1,0 +1,240 @@
+---
+// src/pages/blog/[slug].astro
+import { getCollection, render } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+import { Image } from "astro:assets";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { Badge } from "@/components/ui/badge";
+
+export async function getStaticPaths() {
+  const allPosts = await getCollection("blog", ({ data }) => !data.draft);
+  return allPosts.map((entry: CollectionEntry<"blog">) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props as { entry: CollectionEntry<"blog"> };
+const { Content } = await render(entry);
+const post = entry.data;
+
+const formatDate = (date: Date) =>
+  date.toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
+const firstTag = post.tags?.[0] ?? "Artikel";
+
+const tagVariant = (tag: string) => {
+  if (tag === "Android") return "success";
+  if (tag === "Kotlin") return "info";
+  if (tag === "Case Study") return "default";
+  return "secondary";
+};
+---
+
+<BaseLayout title={post.title} description={post.description}>
+  <article class="pt-32 pb-24 max-w-3xl mx-auto px-6">
+    <!-- Back link -->
+    <a
+      href="/blog"
+      class="inline-flex items-center gap-2 text-slate-500 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 text-sm mb-12 transition-colors animate-on-scroll font-body"
+    >
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+        <path d="M13 8H3M7 4L3 8l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Kembali ke Blog
+    </a>
+
+    <!-- Cover image — tampil hanya jika ada -->
+    {post.cover && (
+      <div class="rounded-2xl overflow-hidden mb-10 animate-on-scroll">
+        <Image
+          src={post.cover}
+          alt={post.title}
+          width={768}
+          height={400}
+          format="webp"
+          class="w-full object-cover"
+        />
+      </div>
+    )}
+
+    <!-- Header -->
+    <header class="mb-12 animate-on-scroll">
+      <div class="flex items-center gap-3 mb-5 flex-wrap">
+        <Badge variant={tagVariant(firstTag)}>{firstTag}</Badge>
+        <span class="font-mono text-xs text-slate-500 dark:text-slate-500">
+          {formatDate(post.pubDate)}
+        </span>
+        {post.readTime && (
+          <>
+            <span class="text-slate-300 dark:text-slate-700">·</span>
+            <span class="font-mono text-xs text-slate-500 dark:text-slate-500">
+              {post.readTime} menit baca
+            </span>
+          </>
+        )}
+        {post.updatedDate && (
+          <>
+            <span class="text-slate-300 dark:text-slate-700">·</span>
+            <span class="font-mono text-xs text-slate-400 dark:text-slate-600">
+              Diperbarui {formatDate(post.updatedDate)}
+            </span>
+          </>
+        )}
+      </div>
+
+      <h1 class="font-heading text-3xl md:text-5xl font-extrabold text-slate-900 dark:text-white leading-tight mb-6">
+        {post.title}
+      </h1>
+      <p class="text-slate-500 dark:text-slate-400 text-lg leading-relaxed font-body">
+        {post.description}
+      </p>
+
+      <!-- Semua tags — tampil jika lebih dari satu -->
+      {post.tags && post.tags.length > 1 && (
+        <div class="flex flex-wrap gap-2 mt-5">
+          {post.tags.map((tag) => (
+            <Badge variant={tagVariant(tag)}>{tag}</Badge>
+          ))}
+        </div>
+      )}
+    </header>
+
+    <!-- Divider -->
+    <div class="w-full h-px bg-linear-to-r from-transparent via-blue-500/40 to-transparent mb-12 animate-on-scroll" />
+
+    <!-- Konten MD/MDX -->
+    <div class="prose-custom animate-on-scroll">
+      <Content />
+    </div>
+
+    <!-- Footer -->
+    <div class="mt-16 pt-8 border-t border-slate-200/60 dark:border-white/5 flex items-center justify-between animate-on-scroll">
+      <a
+        href="/blog"
+        class="inline-flex items-center gap-2 text-slate-500 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 text-sm transition-colors font-body"
+      >
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+          <path d="M13 8H3M7 4L3 8l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Semua Artikel
+      </a>
+      <span class="font-mono text-xs text-slate-400 dark:text-slate-600">sarilabstudio.com/blog</span>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .prose-custom :global(h2) {
+    font-family: "Montserrat Variable", "Montserrat", sans-serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+  }
+  :global(.dark) .prose-custom :global(h2) { color: #f1f5f9; }
+
+  .prose-custom :global(h3) {
+    font-family: "Montserrat Variable", "Montserrat", sans-serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+  }
+  :global(.dark) .prose-custom :global(h3) { color: #e2e8f0; }
+
+  .prose-custom :global(p) {
+    font-family: "Poppins Variable", "Poppins", sans-serif;
+    color: #64748b;
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+  }
+  :global(.dark) .prose-custom :global(p) { color: #94a3b8; }
+
+  .prose-custom :global(ul),
+  .prose-custom :global(ol) {
+    font-family: "Poppins Variable", "Poppins", sans-serif;
+    color: #64748b;
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+    padding-left: 1.5rem;
+  }
+  :global(.dark) .prose-custom :global(ul),
+  :global(.dark) .prose-custom :global(ol) { color: #94a3b8; }
+
+  .prose-custom :global(li) { margin-bottom: 0.4rem; }
+
+  .prose-custom :global(em) { color: #2563eb; font-style: italic; }
+  :global(.dark) .prose-custom :global(em) { color: #60a5fa; }
+
+  .prose-custom :global(strong) { color: #0f172a; font-weight: 600; }
+  :global(.dark) .prose-custom :global(strong) { color: #f1f5f9; }
+
+  .prose-custom :global(a) {
+    color: #2563eb;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  :global(.dark) .prose-custom :global(a) { color: #60a5fa; }
+
+  .prose-custom :global(blockquote) {
+    border-left: 3px solid #2563eb;
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+    color: #64748b;
+    font-style: italic;
+  }
+  :global(.dark) .prose-custom :global(blockquote) {
+    border-color: #3b82f6;
+    color: #94a3b8;
+  }
+
+  .prose-custom :global(code) {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.85em;
+    background: rgba(37, 99, 235, 0.08);
+    border: 1px solid rgba(37, 99, 235, 0.15);
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+    color: #2563eb;
+  }
+  :global(.dark) .prose-custom :global(code) {
+    background: rgba(37, 99, 235, 0.12);
+    border-color: rgba(37, 99, 235, 0.2);
+    color: #60a5fa;
+  }
+
+  .prose-custom :global(pre) {
+    background: #0f172a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    overflow-x: auto;
+    margin-bottom: 1.5rem;
+  }
+  .prose-custom :global(pre code) {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #e2e8f0;
+    font-size: 0.875rem;
+  }
+
+  .prose-custom :global(img) {
+    border-radius: 12px;
+    margin: 1.5rem 0;
+    width: 100%;
+  }
+
+  .prose-custom :global(hr) {
+    border: none;
+    border-top: 1px solid rgba(148,163,184,0.2);
+    margin: 2.5rem 0;
+  }
+</style>

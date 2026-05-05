@@ -1,0 +1,39 @@
+{
+  "name": "HPPku",
+  "tagline": "Kalkulator Harga Pokok Produksi untuk UMKM",
+  "description": "Kalkulator Harga Pokok Produksi untuk UMKM — hitung biaya produksi dan tentukan harga jual yang tepat.",
+  "icon": "../../assets/images/hppku-icon.png",
+  "status": "Tersedia",
+  "category": "Bisnis",
+  "tags": ["Android", "Jetpack Compose", "Keuangan"],
+  "techStack": [
+    "Android",
+    "Jetpack Compose",
+    "Kotlin",
+    "Room",
+    "Hilt",
+    "Material 3"
+  ],
+  "rating": "4.8",
+  "downloads": "5K+",
+  "year": "2026",
+  "features": [
+    {
+      "icon": "📊",
+      "title": "Dashboard Visual",
+      "desc": "Grafik interaktif untuk melihat arus kas, pengeluaran per kategori, dan tren bulanan."
+    },
+    {
+      "icon": "🏷️",
+      "title": "Kategorisasi Otomatis",
+      "desc": "Transaksi dikategorikan secara otomatis berdasarkan pola pengeluaran Anda."
+    }
+  ],
+  "links": [
+    {
+      "store": "Google Play",
+      "href": "https://play.google.com/store/apps/details?id=com.sarilabs.hppku",
+      "icon": "play"
+    }
+  ]
+}

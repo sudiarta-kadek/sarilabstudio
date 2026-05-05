@@ -1,0 +1,39 @@
+{
+  "name": "Rindik Bali",
+  "tagline": "Aplikasi Rindik Bali Digital",
+  "description": "Aplikasi gamelan Bali digital — mainkan instrumen rindik tradisional langsung dari ponsel Anda.",
+  "icon": "../../assets/images/rindikbali-icon.png",
+  "status": "Tersedia",
+  "category": "Seni & Budaya",
+  "tags": ["Android", "Jetpack Compose", "Audio"],
+  "techStack": [
+    "Android",
+    "Jetpack Compose",
+    "Kotlin",
+    "Room",
+    "Hilt",
+    "Material 3"
+  ],
+  "rating": "4.8",
+  "downloads": "5K+",
+  "year": "2026",
+  "features": [
+    {
+      "icon": "📊",
+      "title": "Dashboard Visual",
+      "desc": "Grafik interaktif untuk melihat arus kas, pengeluaran per kategori, dan tren bulanan."
+    },
+    {
+      "icon": "🏷️",
+      "title": "Kategorisasi Otomatis",
+      "desc": "Transaksi dikategorikan secara otomatis berdasarkan pola pengeluaran Anda."
+    }
+  ],
+  "links": [
+    {
+      "store": "Google Play",
+      "href": "https://play.google.com/store/apps/details?id=com.devnut.rindikbali",
+      "icon": "play"
+    }
+  ]
+}

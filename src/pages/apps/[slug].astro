@@ -1,0 +1,171 @@
+---
+// src/pages/apps/[slug].astro
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { Badge } from "@/components/ui/badge";
+
+// 1. Generate path untuk semua aplikasi
+export async function getStaticPaths() {
+  const allApps = await getCollection('apps');
+  return allApps.map((entry: CollectionEntry<'apps'>) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props as { entry: CollectionEntry<'apps'> };
+const app = entry.data;
+
+// Helper icon store
+const storeIcon = (icon: string) => {
+  if (icon === "play") return "▶";
+  if (icon === "mail") return "✉";
+  return "🌐";
+};
+---
+
+<BaseLayout title={app.name} description={app.description}>
+  <section class="pt-32 pb-24 max-w-4xl mx-auto px-6">
+    <!-- Tombol Kembali -->
+    <a
+      href="/apps"
+      class="inline-flex items-center gap-2 text-slate-500 hover:text-blue-600 text-sm mb-12 transition-colors"
+    >
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+        <path d="M13 8H3M7 4L3 8l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Kembali ke Aplikasi
+    </a>
+
+    <!-- Header -->
+    <div class="mb-10 animate-on-scroll">
+      <div class="flex items-center gap-4 mb-6">
+        <div class="w-16 h-16 rounded-3xl overflow-hidden shadow-lg">
+          <Image
+            src={app.icon}
+            alt={`${app.name} icon`}
+            width={64}
+            height={64}
+            format="webp"
+            class="w-full h-full object-cover"
+          />
+        </div>
+        <div>
+          <p class="text-xs font-bold uppercase tracking-wider text-blue-500 mb-1">
+            {app.category} · {app.status}
+          </p>
+          <h1 class="font-heading font-extrabold text-4xl md:text-5xl text-slate-900 dark:text-white">
+            {app.name}
+          </h1>
+        </div>
+      </div>
+
+      <p class="text-slate-600 dark:text-slate-400 text-xl mb-4">{app.tagline}</p>
+      <p class="text-slate-500 leading-relaxed max-w-2xl">{app.description}</p>
+
+      <!-- Meta: rating, downloads, year — tampil hanya jika ada -->
+      {(app.rating || app.downloads || app.year) && (
+        <div class="flex flex-wrap gap-4 mt-6">
+          {app.rating && (
+            <span class="text-sm text-slate-500 dark:text-slate-400">
+              ⭐ <strong class="text-slate-700 dark:text-slate-200">{app.rating}</strong> Rating
+            </span>
+          )}
+          {app.downloads && (
+            <span class="text-sm text-slate-500 dark:text-slate-400">
+              📥 <strong class="text-slate-700 dark:text-slate-200">{app.downloads}</strong> Unduhan
+            </span>
+          )}
+          {app.year && (
+            <span class="text-sm text-slate-500 dark:text-slate-400">
+              📅 Rilis <strong class="text-slate-700 dark:text-slate-200">{app.year}</strong>
+            </span>
+          )}
+        </div>
+      )}
+    </div>
+
+    <!-- Banner Close Testing -->
+    {app.status === "Close Testing" && (
+      <div class="rounded-2xl border border-amber-200 bg-amber-50 dark:bg-amber-500/10 dark:border-amber-500/30 p-5 mb-10">
+        <p class="text-amber-700 dark:text-amber-400 text-sm font-medium">
+          ⚠️ {app.name} saat ini dalam fase Close Testing. Daftarkan email Anda untuk mendapat akses awal.
+        </p>
+        <div class="flex gap-3 mt-4">
+          <input
+            type="email"
+            placeholder="Email kamu"
+            class="flex-1 px-4 py-2 text-sm rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-navy-800 focus:ring-2 focus:ring-blue-500 outline-none"
+          />
+          <button class="px-5 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-500 rounded-xl transition-colors">
+            Daftar
+          </button>
+        </div>
+      </div>
+    )}
+
+    <!-- Banner Segera Hadir -->
+    {app.status === "Segera Hadir" && (
+      <div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-5 mb-10">
+        <p class="text-slate-600 dark:text-slate-400 text-sm">
+          🚧 {app.name} sedang dalam pengembangan. Pantau terus untuk pembaruan.
+        </p>
+      </div>
+    )}
+
+    <!-- Link Store — tampil hanya jika ada -->
+    {app.links && app.links.length > 0 && (
+      <div class="flex flex-wrap gap-3 mb-12">
+        {app.links.map((link) => (
+          <a
+            href={link.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold font-heading text-white bg-blue-600 hover:bg-blue-500 transition-all shadow-md"
+          >
+            <span>{storeIcon(link.icon)}</span>
+            {link.store}
+          </a>
+        ))}
+      </div>
+    )}
+
+    <!-- Fitur Utama -->
+    <div class="mb-12">
+      <h2 class="font-heading font-bold text-2xl text-slate-900 dark:text-white mb-6">Fitur Utama</h2>
+      <div class="grid md:grid-cols-2 gap-4">
+        {app.features.map((f) => (
+          <div class="p-6 rounded-2xl border border-slate-200 dark:border-white/8 bg-white/80 dark:bg-navy-800/60">
+            <span class="text-3xl block mb-3">{f.icon}</span>
+            <h3 class="font-semibold text-slate-900 dark:text-slate-100 mb-2">{f.title}</h3>
+            <p class="text-slate-500 text-sm leading-relaxed">{f.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Tech Stack -->
+    <div class="mb-12">
+      <h2 class="font-heading font-bold text-2xl text-slate-900 dark:text-white mb-4">Teknologi</h2>
+      <div class="flex flex-wrap gap-2">
+        {app.techStack.map((item) => (
+          <Badge variant="outline">{item}</Badge>
+        ))}
+      </div>
+    </div>
+
+    <!-- Tags — tampil hanya jika ada -->
+    {app.tags && app.tags.length > 0 && (
+      <div>
+        <h2 class="font-heading font-bold text-2xl text-slate-900 dark:text-white mb-4">Tags</h2>
+        <div class="flex flex-wrap gap-2">
+          {app.tags.map((tag) => (
+            <Badge variant="secondary">{tag}</Badge>
+          ))}
+        </div>
+      </div>
+    )}
+  </section>
+</BaseLayout>
